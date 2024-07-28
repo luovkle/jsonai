@@ -295,3 +295,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# ✅ CUSTOM
+app/static/public/styles.css
