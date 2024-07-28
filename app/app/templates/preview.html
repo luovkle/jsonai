@@ -1,0 +1,15 @@
+{% extends "./layout/base.html" %}
+
+{% block title %}
+{{ topic }} - Preview - AIRest
+{% endblock title %}
+
+{% block main %}
+<div>
+  {{ data }}
+</div>
+<div>
+  <a href="{{ url_for('views.generator') }}">Generate again</a>
+  <a href="{{ url_for('views.publish') }}">Publish</a>
+</div>
+{% endblock main %}

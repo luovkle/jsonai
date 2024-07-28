@@ -1,0 +1,28 @@
+{% extends "./layout/base.html" %}
+
+{% block title %}
+AIRest
+{% endblock title %}
+
+{% block main %}
+<div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <ul>
+  {% for message in messages %}
+    <li>{{ message }}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+{% endwith %}
+</div>
+<form method="post">
+  <div>
+    <label for="topic">Topic</label>
+    <input id="topic" type="text" name="topic" placeholder="10 best TV series">
+  </div>
+  <div>
+    <button type="submit">Generate Schemas 🎉</button>
+  </div>
+</form>
+{% endblock main %}
