@@ -13,6 +13,14 @@ orjson = "*"
 uwsgi = "*"
 
 [dev-packages]
+black = "*"
+docformatter = "*"
+isort = "*"
+autoflake = "*"
+mypy = "*"
+flake8 = "*"
+pytest = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.12"
