@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev:css": "tailwindcss -i ./app/static/input.css -o ./app/static/public/styles.css --watch"
+    "dev:css": "tailwindcss -i ./app/static/input.css -o ./app/static/public/styles.css --watch",
+    "build:css": "tailwindcss -i ./app/static/input.css -o ./app/static/public/styles.css --minify"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.7"
