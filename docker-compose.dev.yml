@@ -1,0 +1,41 @@
+services:
+  cache_db:
+    container_name: cache_db
+    image: redis:7.2-alpine
+    expose:
+      - 6379
+    restart: always
+    volumes:
+      - cache_db_data:/data/
+
+  db:
+    container_name: db
+    image: mongo:8.0.0-rc13
+    env_file:
+      - ./db/.env
+    expose:
+      - 27017
+    restart: always
+    volumes:
+      - db_data:/data/db/
+
+  app:
+    container_name: app
+    build: ./app/
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+    env_file:
+      - ./app/.env
+    ports:
+     - 4000:4000
+    restart: always
+    command: pipenv run dev --host 0.0.0.0
+    volumes:
+      - ./app/app/:/app/app/:Z
+    depends_on:
+      - cache_db
+      - db
+
+volumes:
+  db_data:
+  cache_db_data:
