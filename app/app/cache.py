@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def get_cache_db() -> Redis:
-    if not "cache_db" in g:
+    if "cache_db" not in g:
         g.cache_db = Redis(
             host=settings.CACHE_DB_HOST,
             port=settings.CACHE_DB_PORT,

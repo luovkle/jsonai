@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def get_db() -> "Database":
-    if not "db" in g:
+    if "db" not in g:
         g.db = MongoClient(settings.DB_URI)
     return g.db[settings.DB_NAME]
 
