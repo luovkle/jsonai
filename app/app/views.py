@@ -6,9 +6,9 @@ from flask import (
     flash,
     redirect,
     render_template,
+    request,
     session,
     url_for,
-    request,
 )
 
 from app.cache import cache_read, cache_save

@@ -1,9 +1,9 @@
 from flask import Flask
 
+from app.cache import init_cache_db
 from app.config import settings
 from app.db import init_db
 from app.views import bp as views_bp
-from app.cache import init_cache_db
 
 
 def create_app():
