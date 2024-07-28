@@ -19,7 +19,7 @@ python_version = "3.12"
 
 [scripts]
 dev = "flask run --debug --port 4000"
-prod = ""
+prod = "uwsgi --http 0.0.0.0:4000 --master -w app.wsgi:app"
 "dev:css" = ""
 "build:css" = ""
 format = ""
