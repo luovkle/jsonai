@@ -1,9 +1,20 @@
+from enum import Enum
+
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class EnvEnum(str, Enum):
+    dev = "dev"
+    test = "test"
+    prod = "prod"
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(use_enum_values=True)
+
     APP_SECRET_KEY: str = Field(min_length=64)
+    APP_ENV: EnvEnum = EnvEnum.prod
 
     CACHE_DB_HOST: str
     CACHE_DB_PORT: int

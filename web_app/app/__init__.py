@@ -12,6 +12,7 @@ def create_app():
         dsn=settings.SENTRY_DSN,
         traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
         profiles_sample_rate=settings.SENTRY_PROFILES_SAMPLE_RATE,
+        environment=settings.APP_ENV,
     )
     app = Flask(__name__)
     app.config.from_mapping(
