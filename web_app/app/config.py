@@ -16,5 +16,9 @@ class Settings(BaseSettings):
     OPENAI_MAX_TOKENS: int
     OPENAI_TEMPERATURE: int
 
+    SENTRY_DSN: str
+    SENTRY_TRACES_SAMPLE_RATE: float = Field(ge=0, le=1)
+    SENTRY_PROFILES_SAMPLE_RATE: float = Field(ge=0, le=1)
+
 
 settings = Settings()  # type: ignore
