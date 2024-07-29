@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     APP_ENV: EnvEnum = EnvEnum.prod
 
     CACHE_DB_HOST: str
-    CACHE_DB_PORT: int
+    CACHE_DB_PORT: int = 6379
+    CACHE_DB_PASSWORD: str
+    CACHE_DB_SSL: bool = True
 
     DB_URI: str
     DB_NAME: str

@@ -15,6 +15,8 @@ def get_cache_db() -> Redis:
         g.cache_db = Redis(
             host=settings.CACHE_DB_HOST,
             port=settings.CACHE_DB_PORT,
+            password=settings.CACHE_DB_PASSWORD,
+            ssl=settings.CACHE_DB_SSL,
             decode_responses=True,
         )
     return g.cache_db
