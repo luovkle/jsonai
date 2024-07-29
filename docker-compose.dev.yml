@@ -19,19 +19,19 @@ services:
     volumes:
       - db_data:/data/db/
 
-  app:
-    container_name: app
-    build: ./app/
+  web_app:
+    container_name: web_app
+    build: ./web_app/
     environment:
       PYTHONDONTWRITEBYTECODE: 1
     env_file:
-      - ./app/.env
+      - ./web_app/.env
     expose:
       - 4000
     restart: always
     command: pipenv run dev --host 0.0.0.0
     volumes:
-      - ./app/app/:/app/app/:Z
+      - ./web_app/app/:/app/app/:Z
     depends_on:
       - cache_db
       - db
