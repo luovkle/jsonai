@@ -11,6 +11,7 @@ pymongo = {extras = ["srv"], version = "*"}
 redis = {extras = ["hiredis"], version = "*"}
 orjson = "*"
 uwsgi = "*"
+sentry-sdk = {extras = ["flask"], version = "*"}
 
 [dev-packages]
 black = "*"
