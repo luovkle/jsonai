@@ -1,4 +1,5 @@
 FROM python:3.12-alpine3.20
+RUN apk add --no-cache python3-dev build-base linux-headers pcre-dev
 RUN pip install pipenv
 WORKDIR /app
 ENV PIPENV_VENV_IN_PROJECT=1
