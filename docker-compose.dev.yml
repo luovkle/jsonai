@@ -23,7 +23,9 @@ services:
 
   web_app:
     container_name: web_app
-    build: ./web_app/
+    build:
+      context: ./web_app/
+      dockerfile: dev.dockerfile
     environment:
       PYTHONDONTWRITEBYTECODE: 1
     env_file:
@@ -31,7 +33,6 @@ services:
     expose:
       - 4000
     restart: always
-    command: pipenv run dev --host 0.0.0.0
     volumes:
       - ./web_app/app/:/app/app/:Z
     depends_on:

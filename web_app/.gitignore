@@ -298,3 +298,4 @@ dist
 
 # ✅ CUSTOM
 app/static/css/**/*.css
+unit/config.json

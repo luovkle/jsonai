@@ -1,0 +1,47 @@
+{
+  "listeners": {
+    "*:80": {
+      "pass": "routes"
+    }
+  },
+  "routes": [
+    {
+      "match": {
+        "uri": "/static/*"
+      },
+      "action": {
+        "share": "/www/app$uri"
+      }
+    },
+    {
+      "action": {
+        "pass": "applications/jsonai"
+      }
+    }
+  ],
+  "applications": {
+    "jsonai": {
+      "type": "python 3.12",
+      "path": "/www/",
+      "module": "app.wsgi",
+      "callable": "app",
+      "environment": {
+        "APP_SECRET_KEY": "{{ APP_SECRET_KEY }}",
+        "APP_ENV": "{{ APP_ENV }}",
+        "CACHE_DB_HOST": "{{ CACHE_DB_HOST }}",
+        "CACHE_DB_PORT": "{{ CACHE_DB_PORT }}",
+        "CACHE_DB_PASSWORD": "{{ CACHE_DB_PASSWORD }}",
+        "CACHE_DB_SSL": "{{ CACHE_DB_SSL }}",
+        "DB_URI": "{{ DB_URI }}",
+        "DB_NAME": "{{ DB_NAME }}",
+        "OPENAI_API_KEY": "{{ OPENAI_API_KEY }}",
+        "OPENAI_MODEL": "{{ OPENAI_MODEL }}",
+        "OPENAI_MAX_TOKENS": "{{ OPENAI_MAX_TOKENS }}",
+        "OPENAI_TEMPERATURE": "{{ OPENAI_TEMPERATURE }}",
+        "SENTRY_DSN": "{{ SENTRY_DSN }}",
+        "SENTRY_TRACES_SAMPLE_RATE": "{{ SENTRY_TRACES_SAMPLE_RATE }}",
+        "SENTRY_PROFILES_SAMPLE_RATE": "{{ SENTRY_PROFILES_SAMPLE_RATE }}"
+      }
+    }
+  }
+}
