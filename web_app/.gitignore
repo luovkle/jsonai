@@ -297,4 +297,4 @@ dist
 .pnp.*
 
 # ✅ CUSTOM
-app/static/public/styles.css
+app/static/css/**/*.css
