@@ -10,7 +10,6 @@ pydantic-settings = "*"
 pymongo = {extras = ["srv"], version = "*"}
 redis = {extras = ["hiredis"], version = "*"}
 orjson = "*"
-uwsgi = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
 
 [dev-packages]
@@ -28,7 +27,6 @@ python_version = "3.12"
 
 [scripts]
 dev = "flask run --debug --port 4000"
-prod = "uwsgi --http 0.0.0.0:4000 --master -w app.wsgi:app"
 "dev:css" = "pnpm run dev:css"
 "build:css" = "pnpm run build:css"
 format = "./scripts/format.sh"
