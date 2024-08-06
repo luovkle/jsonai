@@ -27,9 +27,9 @@ def init_db(app: "Flask"):
     app.teardown_appcontext(close_db)
 
 
-def db_save(topic_id: str, content: list[dict]) -> bool:
+def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     db = get_db()
-    result = db.public.insert_one({"_id": topic_id, "content": content})
+    result = db.public.insert_one({"_id": topic_id, "topic": topic, "content": content})
     doc = db.public.find_one({"_id": result.inserted_id})
     if not doc:
         raise CouldNotSaveDocumentError

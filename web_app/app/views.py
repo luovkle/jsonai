@@ -62,14 +62,14 @@ def publish():
     topic_id = session.get("topic_id")
     if not topic_id:
         return redirect(url_for("views.generator"))
+    data = cache_read(topic_id)
+    if not data:
+        return redirect(url_for("views.generator"))
     if request.method == "POST":
-        data = cache_read(topic_id)
-        if not data:
-            return redirect(url_for("views.generator"))
-        db_save(topic_id, data.get("content", []))
+        db_save(topic_id, data.get("topic", ""), data.get("content", []))
         session.pop("topic_id")
         return redirect(url_for("views.api", topic_id=topic_id))
-    return render_template("publish.html")
+    return render_template("publish.html", topic=data.get("topic"))
 
 
 @bp.route("/api/<topic_id>")
