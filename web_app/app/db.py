@@ -40,5 +40,17 @@ def db_read(topic_id: str) -> list[dict]:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
-        raise DocumentNotFoundError
+        raise DocumentNotFoundError("Topic not found")
     return doc.get("content", [])
+
+
+def db_show(topic_id: str, item_id: str) -> dict:
+    db = get_db()
+    doc = db.public.find_one({"_id": topic_id})
+    if not doc:
+        raise DocumentNotFoundError("Topic not found")
+    content: list = doc.get("content")
+    items = list(filter(lambda item: item.get("id") == item_id, content))
+    if not items:
+        raise DocumentNotFoundError("Item not found")
+    return items[0]

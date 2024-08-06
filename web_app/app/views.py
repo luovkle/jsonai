@@ -4,6 +4,7 @@ from flask import (
     Blueprint,
     abort,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -12,7 +13,7 @@ from flask import (
 )
 
 from app.cache import cache_read, cache_save
-from app.db import db_read, db_save
+from app.db import db_read, db_save, db_show
 from app.exceptions import (
     ChatGPTCompletionError,
     DocumentNotFoundError,
@@ -68,14 +69,23 @@ def publish():
     if request.method == "POST":
         db_save(topic_id, data.get("topic", ""), data.get("content", []))
         session.pop("topic_id")
-        return redirect(url_for("views.api", topic_id=topic_id))
+        return redirect(url_for("views.api_index", topic_id=topic_id))
     return render_template("publish.html", topic=data.get("topic"))
 
 
 @bp.route("/api/<topic_id>")
-def api(topic_id: str):
+def api_index(topic_id: str):
     try:
         content = db_read(topic_id)
-    except DocumentNotFoundError:
-        abort(404)
+    except DocumentNotFoundError as e:
+        return jsonify(error=str(e)), 404
+    return content
+
+
+@bp.route("/api/<topic_id>/<item_id>")
+def api_show(topic_id: str, item_id: str):
+    try:
+        content = db_show(topic_id, item_id)
+    except DocumentNotFoundError as e:
+        return jsonify(error=str(e)), 404
     return content

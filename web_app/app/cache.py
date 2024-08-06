@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from uuid import uuid4
 
 import orjson
 from flask import g
@@ -34,6 +35,8 @@ def init_cache_db(app: "Flask"):
 
 def cache_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     cache_db = get_cache_db()
+    for item in content:
+        item["id"] = str(uuid4())
     data = orjson.dumps({"topic": topic, "content": content})
     cache_db.set(topic_id, value=data)
     return True
