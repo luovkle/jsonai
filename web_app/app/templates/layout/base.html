@@ -7,7 +7,10 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
   </head>
-  <body>
-    <main>{% block main %}{% endblock main %}</main>
+  <body class="h-screen bg-[#090b0e] text-white">
+    <nav class="px-8 py-4 text-xl font-bold">
+      <a href="{{ url_for('views.generator') }}">⚡️ JSONAI</a>
+    </nav>
+    <main class="h-3/4 flex justify-center items-center">{% block main %}{% endblock main %}</main>
   </body>
 </html>

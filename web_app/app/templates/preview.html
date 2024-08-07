@@ -1,15 +1,30 @@
 {% extends "./layout/base.html" %}
 
 {% block title %}
-{{ topic }} - Preview - AIRest
+{{ topic }} - Preview - JSONAI
 {% endblock title %}
 
 {% block main %}
-<div>
-  {{ data }}
+<div class="h-full w-3/4 space-y-2">
+  <h1 class="text-2xl font-bold">{{ topic }}</h1>
+
+  <pre class="h-full">
+    <code class="language-json" id="json-display" style="height: 90%;"></code>
+  </pre>
+
+  <div class="flex justify-evenly	font-bold">
+    <a href="{{ url_for('views.generator') }}" class="w-2/5 py-2 border rounded-lg text-center">Generate again</a>
+    <a href="{{ url_for('views.publish') }}" class="w-2/5 py-2 bg-[#ffcb3c] rounded-lg text-center text-[#090b0e]">Publish 🚀</a>
+  </div>
 </div>
-<div>
-  <a href="{{ url_for('views.generator') }}">Generate again</a>
-  <a href="{{ url_for('views.publish') }}">Publish</a>
-</div>
+
+<script>
+  const jsonData = {{ data|tojson|safe }};
+  const prettyJson = JSON.stringify(jsonData, null, 2);
+  document.getElementById('json-display').textContent = prettyJson;
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" integrity="sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" integrity="sha512-6yoqbrcLAHDWAdQmiRlHG4+m0g/CT/V9AGyxabG8j7Jk8j3r3K6due7oqpiRMZqcYe9WM2gPcaNNxnl2ux+3tA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>hljs.highlightAll();</script>
 {% endblock main %}
