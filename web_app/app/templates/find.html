@@ -1,0 +1,35 @@
+{% extends "./layout/base.html" %}
+
+{% block title %}
+Find - JSONAI
+{% endblock title %}
+
+{% block main %}
+<div class="h-full w-3/4 space-y-8">
+  <h1 class="text-2xl font-bold">Find topics</h1>
+
+  <section>
+  {% if topics %}
+    <ul class="space-y-4">
+    {% for topic in topics %}
+      <li>
+        <a href="{{ url_for('views.api_index', topic_id=topic.topic_id) }}" class="block py-4 px-8 border rounded-md">
+          <h2 class="font-bold">Topic: {{ topic.topic }}</h2>
+          <span>ID: {{ topic.topic_id }}</span>
+        </a>
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </section>
+
+  <div class="flex justify-evenly	font-bold">
+    {% if preview %}
+    <a href="{{ url_for('views.find', page=preview) }}" class="w-2/5 py-2 border rounded-lg text-center">Preview</a>
+    {% endif %}
+    {% if next %}
+    <a href="{{ url_for('views.find', page=next) }}" class="w-2/5 py-2 border rounded-lg text-center">Next</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock main %}

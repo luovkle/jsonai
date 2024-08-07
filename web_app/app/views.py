@@ -13,7 +13,7 @@ from flask import (
 )
 
 from app.cache import cache_read, cache_save
-from app.db import db_read, db_save, db_show
+from app.db import db_find_topics, db_read, db_save, db_show
 from app.exceptions import (
     ChatGPTCompletionError,
     DocumentNotFoundError,
@@ -71,6 +71,23 @@ def publish():
         session.pop("topic_id")
         return redirect(url_for("views.api_index", topic_id=topic_id))
     return render_template("publish.html", topic=data.get("topic"))
+
+
+@bp.route("/find")
+@bp.route("/find/<int:page>")
+def find(page: int | None = None):
+    if page in [0, 1]:
+        return redirect(url_for("views.find"))
+    page = page or 1
+    found_topics = db_find_topics(page)
+    if not found_topics["topics"]:
+        abort(404)
+    return render_template(
+        "find.html",
+        topics=found_topics["topics"],
+        preview=found_topics["preview"],
+        next=found_topics["next"],
+    )
 
 
 @bp.route("/api/<topic_id>")
