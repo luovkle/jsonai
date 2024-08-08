@@ -12,7 +12,7 @@ JSONAI
       <h2 class="text-2xl">Transform Topics into Functional APIs in Seconds – Simplify Your Workflow and Supercharge Your Productivity!</h2>
     </div>
 
-    <form method="post" class="space-y-4">
+    <form method="post" class="space-y-4" onsubmit="handleSubmit(event)">
       {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul class="text-red-500">
@@ -25,7 +25,8 @@ JSONAI
 
       <div class="border rounded-full py-4 px-8 flex justify-between">
         <input id="topic" type="text" name="topic" placeholder="Polyphonic Synthesizers" autocomplete="off" class="w-3/4 bg-inherit focus:outline-none">
-        <button type="submit" class="font-bold">Generate API ⚡️</button>
+        <button id="topic-button" type="submit" class="font-bold">Generate API ⚡️</button>
+        <div id="topic-spinner" hidden>{% include "components/spinner.html" %}</div>
       </div>
     </form>
 
@@ -44,3 +45,13 @@ JSONAI
   </div>
 </div>
 {% endblock main %}
+
+{% block scripts %}
+<script type="text/javascript">
+const handleSubmit = (event) => {
+  document.getElementById("topic-button").hidden = true;
+  document.getElementById("topic-button").disabled = true;
+  document.getElementById("topic-spinner").hidden = false;
+}
+</script>
+{% endblock scripts %}
