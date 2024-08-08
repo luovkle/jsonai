@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from flask import g
@@ -32,7 +33,14 @@ def init_db(app: "Flask"):
 
 def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     db = get_db()
-    result = db.public.insert_one({"_id": topic_id, "topic": topic, "content": content})
+    result = db.public.insert_one(
+        {
+            "_id": topic_id,
+            "topic": topic,
+            "content": content,
+            "created_at": datetime.now(),
+        }
+    )
     doc = db.public.find_one({"_id": result.inserted_id})
     if not doc:
         raise CouldNotSaveDocumentError
@@ -54,6 +62,19 @@ def db_find_topics(page: int = 1) -> FoundTopics:
     docs = list(db.public.find(projection=["topic"]).skip(skip + 20).limit(1))
     next = page + 1 if docs else None  # Show 'next' button?
     return {"topics": topics, "preview": preview, "next": next}
+
+
+def db_last_topics() -> list[dict]:
+    db = get_db()
+    docs = list(db.public.find(projection=["topic"]).sort({ "$natural": -1 }).limit(5))
+    topics: list[dict] = []
+    for doc in docs:
+        try:
+            topic = TopicRead(**doc).model_dump()
+        except ValidationError:
+            continue
+        topics.append(topic)
+    return topics
 
 
 def db_read(topic_id: str) -> list[dict]:

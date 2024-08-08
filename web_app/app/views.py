@@ -13,7 +13,7 @@ from flask import (
 )
 
 from app.cache import cache_read, cache_save
-from app.db import db_find_topics, db_read, db_save, db_show
+from app.db import db_find_topics, db_last_topics, db_read, db_save, db_show
 from app.exceptions import (
     ChatGPTCompletionError,
     DocumentNotFoundError,
@@ -31,6 +31,8 @@ def generator():
         topic = request.form.get("topic", "")
         if not topic:
             errors.append("Invalid topic")
+        if len(topic) >= 32:
+            errors.append("Maximum length is 32 characters")
         if not errors:
             try:
                 data = generate_data(topic)
@@ -42,7 +44,8 @@ def generator():
             return redirect(url_for("views.preview"))
         for error in errors:
             flash(error)
-    return render_template("index.html")
+    last_topics = db_last_topics()
+    return render_template("index.html", topics=last_topics)
 
 
 @bp.route("/preview")

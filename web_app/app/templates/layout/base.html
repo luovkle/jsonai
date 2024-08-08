@@ -7,10 +7,11 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
   </head>
-  <body class="h-screen bg-[#090b0e] text-white">
-    <nav class="px-8 py-4 text-xl font-bold">
-      <a href="{{ url_for('views.generator') }}">⚡️ JSONAI</a>
+  <body class="h-screen bg-[#090b0e] text-white relative">
+    <nav class="fixed w-full px-8 py-4 flex justify-between font-bold">
+      <a href="{{ url_for('views.generator') }}" class="text-xl">⚡️ JSONAI</a>
+      <a href="{{ url_for('views.find') }}" class="py-2 px-4 border rounded-lg">All APIs</a>
     </nav>
-    <main class="h-3/4 flex justify-center items-center">{% block main %}{% endblock main %}</main>
+    <main class="h-full">{% block main %}{% endblock main %}</main>
   </body>
 </html>

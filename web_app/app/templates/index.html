@@ -5,27 +5,42 @@ JSONAI
 {% endblock title %}
 
 {% block main %}
-<div class="w-3/4 space-y-12 text-center select-none">
-  <div class="space-y-4">
-    <h1 class="font-bold text-7xl">Effortlessly Create Powerful REST APIs with AI</h1>
-    <h2 class="text-2xl">Transform Topics into Functional APIs in Seconds – Simplify Your Workflow and Supercharge Your Productivity!</h2>
-  </div>
-
-  <form method="post" class="space-y-4">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class="text-red-500">
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-    {% endwith %}
-
-    <div class="border rounded-full py-4 px-8 flex justify-between">
-      <input id="topic" type="text" name="topic" placeholder="Polyphonic Synthesizers" autocomplete="off" class="w-3/4 bg-inherit focus:outline-none">
-      <button type="submit" class="font-bold">Generate API ⚡️</button>
+<div class="h-full flex justify-center items-center">
+  <div class="w-3/4 space-y-16 text-center select-none">
+    <div class="space-y-4">
+      <h1 class="font-bold text-7xl">Effortlessly Create Powerful REST APIs with AI</h1>
+      <h2 class="text-2xl">Transform Topics into Functional APIs in Seconds – Simplify Your Workflow and Supercharge Your Productivity!</h2>
     </div>
-  </form>
+
+    <form method="post" class="space-y-4">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="text-red-500">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      {% endwith %}
+
+      <div class="border rounded-full py-4 px-8 flex justify-between">
+        <input id="topic" type="text" name="topic" placeholder="Polyphonic Synthesizers" autocomplete="off" class="w-3/4 bg-inherit focus:outline-none">
+        <button type="submit" class="font-bold">Generate API ⚡️</button>
+      </div>
+    </form>
+
+    {% if topics %}
+    <section class="space-y-2">
+      <h3 class="text-xl font-bold">Latest APIs created</h3>
+      <ul class="flex flex-wrap gap-2 justify-center">
+        {% for topic in topics %}
+        <li>
+          <a href="{{ url_for('views.api_index', topic_id=topic.topic_id) }}" class="block font-semibold bg-[#ffcb3c] text-[#090b0e] py-1 px-4 rounded-xl" target="_blank" rel="noopener noreferrer">{{ topic.topic }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
 </div>
 {% endblock main %}
