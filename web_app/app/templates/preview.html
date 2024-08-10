@@ -10,9 +10,9 @@
     <div class="space-y-8">
       <h1 class="text-2xl font-bold">{{ topic }}</h1>
 
-      <pre class="inline">
-        <code class="language-json" id="json-display" style="height: 35rem; overflow-y: scroll;"></code>
-      </pre>
+      <div class="rounded-lg overflow-x-auto p-4 bg-[#0d1117]">
+        <code id="json-display"></code>
+      </div>
     </div>
 
     <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row font-bold pb-12">
@@ -24,12 +24,63 @@
 {% endblock main %}
 
 {% block scripts %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" integrity="sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" integrity="sha512-6yoqbrcLAHDWAdQmiRlHG4+m0g/CT/V9AGyxabG8j7Jk8j3r3K6due7oqpiRMZqcYe9WM2gPcaNNxnl2ux+3tA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script>
-  const jsonData = {{ data|tojson|safe }};
-  const prettyJson = JSON.stringify(jsonData, null, 2);
-  document.getElementById('json-display').textContent = prettyJson;
+<script type="text/javascript">
+const syntaxHighlight = (json) => {
+  if (typeof json != "string") {
+    json = JSON.stringify(json, null, "\t");
+  }
+
+  json = json
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return json.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    (match) => {
+      var cls = "number";
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = "key";
+        } else {
+          cls = "string";
+        }
+      } else if (/true|false/.test(match)) {
+        cls = "boolean";
+      } else if (/null/.test(match)) {
+        cls = "null";
+      }
+      return '<span class="' + cls + '">' + match + "</span>";
+    }
+  );
+}
+
+const data = {{ data|tojson|safe }};
+document.getElementById('json-display').innerHTML = syntaxHighlight(data);
 </script>
-<script>hljs.highlightAll();</script>
+
+<style type="text/css">
+#json-display {
+  white-space: pre;
+  font-family: Consolas, monospace;
+
+  .string {
+    color: #a5d6ff;
+    word-break: break-all;
+  }
+
+  .number {
+    color: #79c0ff;
+  }
+
+  .boolean,
+  .null {
+    color: #ff7b72;
+  }
+
+  .key {
+    color: #79c0ff;
+  }
+}
+</style>
 {% endblock scripts %}
