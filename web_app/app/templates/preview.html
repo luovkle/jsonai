@@ -5,26 +5,31 @@
 {% endblock title %}
 
 {% block main %}
-<div class="h-full w-3/4 space-y-2">
-  <h1 class="text-2xl font-bold">{{ topic }}</h1>
+<div class="h-full flex justify-center">
+  <div class="w-3/4 space-y-8 mt-24 sm:mt-32 flex flex-col justify-between">
+    <div class="space-y-8">
+      <h1 class="text-2xl font-bold">{{ topic }}</h1>
 
-  <pre class="h-full">
-    <code class="language-json" id="json-display" style="height: 90%;"></code>
-  </pre>
+      <pre class="inline">
+        <code class="language-json" id="json-display" style="height: 35rem; overflow-y: scroll;"></code>
+      </pre>
+    </div>
 
-  <div class="flex justify-evenly	font-bold">
-    <a href="{{ url_for('views.generator') }}" class="w-2/5 py-2 border rounded-lg text-center">Generate again</a>
-    <a href="{{ url_for('views.publish') }}" class="w-2/5 py-2 bg-[#ffcb3c] rounded-lg text-center text-[#090b0e]">Publish 🚀</a>
+    <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row font-bold pb-12">
+      <a href="{{ url_for('views.generator') }}" class="w-full sm:w-2/4 py-2 border rounded-lg text-center">Generate again</a>
+      <a href="{{ url_for('views.publish') }}" class="w-full sm:w-2/4 py-2 bg-[#ffcb3c] rounded-lg text-center text-[#090b0e] align-baseline">Publish 🚀</a>
+    </div>
   </div>
 </div>
+{% endblock main %}
 
+{% block scripts %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" integrity="sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" integrity="sha512-6yoqbrcLAHDWAdQmiRlHG4+m0g/CT/V9AGyxabG8j7Jk8j3r3K6due7oqpiRMZqcYe9WM2gPcaNNxnl2ux+3tA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   const jsonData = {{ data|tojson|safe }};
   const prettyJson = JSON.stringify(jsonData, null, 2);
   document.getElementById('json-display').textContent = prettyJson;
 </script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" integrity="sha512-rO+olRTkcf304DQBxSWxln8JXCzTHlKnIdnMUwYvQa9/Jd4cQaNkItIUj6Z4nvW1dqK0SKXLbn9h4KwZTNtAyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" integrity="sha512-6yoqbrcLAHDWAdQmiRlHG4+m0g/CT/V9AGyxabG8j7Jk8j3r3K6due7oqpiRMZqcYe9WM2gPcaNNxnl2ux+3tA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>hljs.highlightAll();</script>
-{% endblock main %}
+{% endblock scripts %}

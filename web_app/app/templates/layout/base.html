@@ -8,9 +8,13 @@
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
   </head>
   <body class="h-screen bg-[#090b0e] text-white relative">
-    <nav class="fixed w-full px-8 py-4 flex justify-between font-bold">
+    <nav class="fixed w-full px-8 py-4 flex justify-between items-center font-bold bg-[#090b0e] bg-opacity-50 backdrop-blur-lg">
       <a href="{{ url_for('views.generator') }}" class="text-xl">⚡️ JSONAI</a>
-      <a href="{{ url_for('views.find') }}" class="py-2 px-4 border rounded-lg">All APIs</a>
+      <div class="py-2">
+        <a href="https://github.com/luovkle/jsonai" class="py-2 px-4 sm:hidden" target="_blank" rel="noopener noreferrer">{% include "components/github_icon.html" %}</a>
+        <a href="https://github.com/luovkle/jsonai" class="py-2 px-4 hover:text-[#ffcb3c] hidden sm:inline" target="_blank" rel="noopener noreferrer">Source Code</a>
+        <a href="{{ url_for('views.find') }}" class="py-2 px-4 border rounded-lg hover:bg-[#ffcb3c] hover:text-[#090b0e] hover:border-transparent">All APIs</a>
+      </div>
     </nav>
     <main class="h-full">{% block main %}{% endblock main %}</main>
   </body>
