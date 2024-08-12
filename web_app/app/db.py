@@ -101,7 +101,7 @@ def db_find_topics(page: int = 1) -> FoundTopics:
 
 def db_last_topics() -> list[dict]:
     db = get_db()
-    docs = list(db.public.find(projection=["topic"]).sort({"$natural": -1}).limit(5))
+    docs = list(db.public.find(projection=["topic"]).sort({"$natural": -1}).limit(10))
     topics: list[dict] = []
     for doc in docs:
         try:
