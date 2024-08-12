@@ -5,6 +5,7 @@ from flask import current_app
 from openai import OpenAI
 
 from app.config import settings
+from app.db import db_save_completion
 from app.exceptions import ChatGPTCompletionError, JSONExtractionError
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -75,4 +76,10 @@ def generate_completion(topic_id: str, prompt: str) -> str:
 def generate_data(topic_id: str, topic: str) -> list[dict]:
     prompt = generate_prompt(topic)
     completion = generate_completion(topic_id, prompt)
-    return extract_json_from_completion(topic_id, completion)
+    try:
+        data = extract_json_from_completion(topic_id, completion)
+    except (ChatGPTCompletionError, JSONExtractionError) as e:
+        db_save_completion(topic_id, prompt, completion, error=str(e))
+        raise
+    db_save_completion(topic_id, prompt, completion)
+    return data

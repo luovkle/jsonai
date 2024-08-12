@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import uuid4
 
 from flask import current_app, g
 from pydantic import ValidationError
@@ -55,6 +56,27 @@ def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
             could_not_save_document_error_template.format(topic_id=topic_id)
         )
     return True
+
+
+def db_save_completion(
+    topic_id: str, prompt: str, completion: str, error: str | None = None
+) -> bool:
+    db = get_db()
+    result = db.completions.insert_one(
+        {
+            "_id": str(uuid4()),
+            "topic_id": topic_id,
+            "prompt": prompt,
+            "completion": completion,
+            "error": error,
+        }
+    )
+    doc = db.completions.find_one({"_id": result.inserted_id})
+    if not doc:
+        current_app.logger.error(
+            could_not_save_document_error_template.format(topic_id=topic_id)
+        )
+    return True if doc else False
 
 
 def db_find_topics(page: int = 1) -> FoundTopics:
