@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from flask import g
+from flask import current_app, g
 from pydantic import ValidationError
 from pymongo import MongoClient
 
@@ -13,6 +13,11 @@ from app.types import FoundTopics
 if TYPE_CHECKING:
     from flask import Flask
     from pymongo.database import Database
+
+could_not_save_document_error_template = "Could not save the document {topic_id}"
+validation_error_template = "The document {doc_id} does not have a valid schema"
+topic_not_fund_error_template = "Topic {topic_id} not found"
+item_not_fund_error_template = "Item {item_id} not found"
 
 
 def get_db() -> "Database":
@@ -43,7 +48,12 @@ def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     )
     doc = db.public.find_one({"_id": result.inserted_id})
     if not doc:
-        raise CouldNotSaveDocumentError(f"Could not save the document {topic_id}")
+        current_app.logger.error(
+            could_not_save_document_error_template.format(topic_id=topic_id)
+        )
+        raise CouldNotSaveDocumentError(
+            could_not_save_document_error_template.format(topic_id=topic_id)
+        )
     return True
 
 
@@ -56,6 +66,9 @@ def db_find_topics(page: int = 1) -> FoundTopics:
         try:
             topic = TopicRead(**doc).model_dump()
         except ValidationError:
+            current_app.logger.warning(
+                validation_error_template.format(doc_id=doc.get("_id"))
+            )
             continue
         topics.append(topic)
     preview = page - 1 if page > 1 else None  # Show 'preview' button?
@@ -72,6 +85,9 @@ def db_last_topics() -> list[dict]:
         try:
             topic = TopicRead(**doc).model_dump()
         except ValidationError:
+            current_app.logger.warning(
+                validation_error_template.format(doc_id=doc.get("_id"))
+            )
             continue
         topics.append(topic)
     return topics
@@ -81,7 +97,12 @@ def db_read(topic_id: str) -> list[dict]:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
-        raise DocumentNotFoundError(f"Topic {topic_id} not found")
+        current_app.logger.warning(
+            topic_not_fund_error_template.format(topic_id=topic_id)
+        )
+        raise DocumentNotFoundError(
+            topic_not_fund_error_template.format(topic_id=topic_id)
+        )
     return doc.get("content", [])
 
 
@@ -89,9 +110,17 @@ def db_show(topic_id: str, item_id: str) -> dict:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
-        raise DocumentNotFoundError(f"Topic {topic_id} not found")
+        current_app.logger.warning(
+            topic_not_fund_error_template.format(topic_id=topic_id)
+        )
+        raise DocumentNotFoundError(
+            topic_not_fund_error_template.format(topic_id=topic_id)
+        )
     content: list = doc.get("content")
     items = list(filter(lambda item: item.get("id") == item_id, content))
     if not items:
-        raise DocumentNotFoundError(f"Item {item_id} not found")
+        current_app.logger.warning(item_not_fund_error_template.format(item_id=item_id))
+        raise DocumentNotFoundError(
+            item_not_fund_error_template.format(item_id=item_id)
+        )
     return items[0]

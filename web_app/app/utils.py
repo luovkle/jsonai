@@ -1,6 +1,7 @@
 import re
 
 import orjson
+from flask import current_app
 from openai import OpenAI
 
 from app.config import settings
@@ -8,18 +9,30 @@ from app.exceptions import ChatGPTCompletionError, JSONExtractionError
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
+pattern_match_error_template = (
+    "The completion of topic {topic_id} does not match the pattern"
+)
+json_decoding_error_template = "Error decoding the JSON of topic {topic_id}"
+chatgpt_completion_error_template = (
+    "An error occurred while generating the completion for topic {topic_id}"
+)
+
 
 def extract_json_from_completion(topic_id: str, completion: str) -> list[dict]:
     pattern = r"```json\s*(\[\s*\{.*?\}\s*\])\s*```"
     match = re.search(pattern, completion, re.DOTALL)
     if not match:
+        current_app.logger.error(pattern_match_error_template.format(topic_id=topic_id))
         raise JSONExtractionError(
-            f"The completion of topic {topic_id} does not match the pattern"
+            pattern_match_error_template.format(topic_id=topic_id)
         )
     try:
         json_data = orjson.loads(match.group(1))
     except orjson.JSONDecodeError:
-        raise JSONExtractionError(f"Error decoding the JSON of topic {topic_id}")
+        current_app.logger.error(json_decoding_error_template.format(topic_id=topic_id))
+        raise JSONExtractionError(
+            json_decoding_error_template.format(topic_id=topic_id)
+        )
     return json_data
 
 
@@ -50,8 +63,11 @@ def generate_completion(topic_id: str, prompt: str) -> str:
     )
     content = completion.choices[0].message.content
     if not content:
+        current_app.logger.error(
+            chatgpt_completion_error_template.format(topic_id=topic_id)
+        )
         raise ChatGPTCompletionError(
-            f"An error occurred while generating the completion for topic {topic_id}"
+            chatgpt_completion_error_template.format(topic_id=topic_id)
         )
     return content
 
