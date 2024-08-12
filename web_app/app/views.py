@@ -34,11 +34,11 @@ def generator():
         if len(topic) >= 32:
             errors.append("Maximum length is 32 characters")
         if not errors:
+            topic_id = str(uuid4())
             try:
-                data = generate_data(topic)
+                data = generate_data(topic_id, topic)
             except (ChatGPTCompletionError, JSONExtractionError):
                 abort(500)
-            topic_id = str(uuid4())
             cache_save(topic_id, topic, data)
             session["topic_id"] = topic_id
             return redirect(url_for("views.preview"))

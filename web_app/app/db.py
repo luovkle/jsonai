@@ -43,7 +43,7 @@ def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     )
     doc = db.public.find_one({"_id": result.inserted_id})
     if not doc:
-        raise CouldNotSaveDocumentError
+        raise CouldNotSaveDocumentError(f"Could not save the document {topic_id}")
     return True
 
 
@@ -66,7 +66,7 @@ def db_find_topics(page: int = 1) -> FoundTopics:
 
 def db_last_topics() -> list[dict]:
     db = get_db()
-    docs = list(db.public.find(projection=["topic"]).sort({ "$natural": -1 }).limit(5))
+    docs = list(db.public.find(projection=["topic"]).sort({"$natural": -1}).limit(5))
     topics: list[dict] = []
     for doc in docs:
         try:
@@ -81,7 +81,7 @@ def db_read(topic_id: str) -> list[dict]:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
-        raise DocumentNotFoundError("Topic not found")
+        raise DocumentNotFoundError(f"Topic {topic_id} not found")
     return doc.get("content", [])
 
 
@@ -89,9 +89,9 @@ def db_show(topic_id: str, item_id: str) -> dict:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
-        raise DocumentNotFoundError("Topic not found")
+        raise DocumentNotFoundError(f"Topic {topic_id} not found")
     content: list = doc.get("content")
     items = list(filter(lambda item: item.get("id") == item_id, content))
     if not items:
-        raise DocumentNotFoundError("Item not found")
+        raise DocumentNotFoundError(f"Item {item_id} not found")
     return items[0]
