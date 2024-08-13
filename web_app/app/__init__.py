@@ -1,10 +1,32 @@
+import logging
+
 import sentry_sdk
-from flask import Flask, render_template
+from flask import Flask, has_request_context, render_template, request
+from flask.logging import default_handler
 
 from app.cache import init_cache_db
 from app.config import settings
 from app.db import init_db
 from app.views import bp as views_bp
+
+
+class RequestFormatter(logging.Formatter):
+    def format(self, record):
+        if has_request_context():
+            record.url = request.url
+            record.remote_addr = request.remote_addr
+        else:
+            record.url = None
+            record.remote_addr = None
+
+        return super().format(record)
+
+
+formatter = RequestFormatter(
+    "[%(asctime)s] %(remote_addr)s requested %(url)s\n"
+    "%(levelname)s in %(module)s: %(message)s"
+)
+default_handler.setFormatter(formatter)
 
 
 def page_not_found(_):
