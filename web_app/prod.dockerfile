@@ -61,3 +61,9 @@ COPY --from=unit-config ["/config/unit/config.json", "/docker-entrypoint.d/"]
 COPY ["./app/", "/www/app/"]
 COPY --from=node-builder ["/builder/app/static/", "/www/app/static/"]
 EXPOSE 80
+CMD [ \
+  "unitd", \
+  "--no-daemon", \
+  "--control", "unix:/var/run/control.unit.sock", \
+  "--log", "/var/log/www.log" \
+  ]
