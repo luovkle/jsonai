@@ -21,6 +21,7 @@ mypy = "*"
 flake8 = "*"
 pytest = "*"
 coverage = "*"
+djlint = "*"
 
 [requires]
 python_version = "3.12"
