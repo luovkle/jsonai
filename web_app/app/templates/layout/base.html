@@ -1,22 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}{% endblock title %}</title>
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
+    <meta name="description"
+          content="Effortlessly Create Powerful REST APIs with AI" />
+    <meta name="keywords"
+          content="ai-powered rest apis, api creation, effortless api development, api automation, ai-driven apis, fast api development, rest api generator, simplify workflow, boost productivity, functional apis, api tools, rest api builder, ai for developers, efficient api creation" />
+    <title>
+      {% block title %}
+      {% endblock title %}
+    </title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}"
+          rel="stylesheet" />
+    <link href="{{ url_for('static', filename='favicon.ico') }}"
+          rel="icon"
+          type="image/x-icon" />
   </head>
   <body class="h-screen bg-[#090b0e] text-white relative">
     <nav class="fixed w-full px-8 py-4 flex justify-between items-center font-bold bg-[#090b0e] bg-opacity-50 backdrop-blur-lg">
-      <a href="{{ url_for('views.generator') }}" class="text-xl">⚡️ JSONAI</a>
+      <a href="{{ url_for("views.generator") }}" class="text-xl">⚡️ JSONAI</a>
       <div class="py-2">
-        <a href="https://github.com/luovkle/jsonai" class="py-2 px-4 sm:hidden" target="_blank" rel="noopener noreferrer">{% include "components/github_icon.html" %}</a>
-        <a href="https://github.com/luovkle/jsonai" class="py-2 px-4 hover:text-[#ffcb3c] hidden sm:inline" target="_blank" rel="noopener noreferrer">Source Code</a>
-        <a href="{{ url_for('views.find') }}" class="py-2 px-4 border rounded-lg hover:bg-[#ffcb3c] hover:text-[#090b0e] hover:border-transparent">All APIs</a>
+        <a href="https://github.com/luovkle/jsonai"
+           class="py-2 px-4 sm:hidden"
+           target="_blank"
+           rel="noopener noreferrer">{% include "components/github_icon.html" %}</a>
+        <a href="https://github.com/luovkle/jsonai"
+           class="py-2 px-4 hover:text-[#ffcb3c] hidden sm:inline"
+           target="_blank"
+           rel="noopener noreferrer">Source Code</a>
+        <a href="{{ url_for("views.find") }}"
+           class="py-2 px-4 border rounded-lg hover:bg-[#ffcb3c] hover:text-[#090b0e] hover:border-transparent">All APIs</a>
       </div>
     </nav>
-    <main class="h-full">{% block main %}{% endblock main %}</main>
-    {% block scripts %}{% endblock scripts %}
+    <main class="h-full">
+      {% block main %}
+      {% endblock main %}
+    </main>
+    {% block scripts %}
+    {% endblock scripts %}
   </body>
 </html>

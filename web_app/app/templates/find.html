@@ -1,43 +1,46 @@
 {% extends "./layout/base.html" %}
 
 {% block title %}
-Find - JSONAI
+  Find - JSONAI
 {% endblock title %}
 
 {% block main %}
-<div class="h-full flex justify-center">
-  <div class="w-3/4 space-y-8 mt-24 sm:mt-32 flex flex-col justify-between">
-    <div class="space-y-8">
-      <h1 class="text-2xl font-bold">Find topics</h1>
+  <div class="h-full flex justify-center">
+    <div class="w-3/4 space-y-8 mt-24 sm:mt-32 flex flex-col justify-between">
+      <div class="space-y-8">
+        <h1 class="text-2xl font-bold">Find topics</h1>
 
-      <section>
-      {% if topics %}
-        <ul class="space-y-4">
-        {% for topic in topics %}
-          <li>
-            <a href="{{ url_for('views.api_index', topic_id=topic.topic_id) }}" class="block py-4 px-8 border rounded-md hover:bg-[#ffcb3c] hover:text-[#090b0e] hover:border-transparent">
-              <h2 class="font-bold">Topic: {{ topic.topic }}</h2>
-              <span>ID: {{ topic.topic_id }}</span>
-            </a>
-          </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-      </section>
-    </div>
+        <section>
+          {% if topics %}
+            <ul class="space-y-4">
+              {% for topic in topics %}
+                <li>
+                  <a href="{{ url_for('views.api_index', topic_id=topic.topic_id) }}"
+                     class="block py-4 px-8 border rounded-md hover:bg-[#ffcb3c] hover:text-[#090b0e] hover:border-transparent">
+                    <h2 class="font-bold">Topic: {{ topic.topic }}</h2>
+                    <span>ID: {{ topic.topic_id }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </section>
+      </div>
 
-    <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row font-bold pb-12">
-      {% if preview %}
-      <a href="{{ url_for('views.find', page=preview) }}" class="w-full sm:w-2/4 py-2 border rounded-lg text-center">Preview</a>
-      {% else %}
-      <span class="w-full sm:w-2/4 py-2 border rounded-lg text-center cursor-not-allowed line-through">Preview</span>
-      {% endif %}
-      {% if next %}
-      <a href="{{ url_for('views.find', page=next) }}" class="w-full sm:w-2/4 py-2 border rounded-lg text-center">Next</a>
-      {% else %}
-      <span class="w-full sm:w-2/4 py-2 border rounded-lg text-center cursor-not-allowed line-through">Next</span>
-      {% endif %}
+      <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row font-bold pb-12">
+        {% if preview %}
+          <a href="{{ url_for('views.find', page=preview) }}"
+             class="w-full sm:w-2/4 py-2 border rounded-lg text-center">Preview</a>
+        {% else %}
+          <span class="w-full sm:w-2/4 py-2 border rounded-lg text-center cursor-not-allowed line-through">Preview</span>
+        {% endif %}
+        {% if next %}
+          <a href="{{ url_for('views.find', page=next) }}"
+             class="w-full sm:w-2/4 py-2 border rounded-lg text-center">Next</a>
+        {% else %}
+          <span class="w-full sm:w-2/4 py-2 border rounded-lg text-center cursor-not-allowed line-through">Next</span>
+        {% endif %}
+      </div>
     </div>
   </div>
-</div>
 {% endblock main %}
