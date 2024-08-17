@@ -41,7 +41,7 @@
           <ul class="flex flex-wrap gap-2 justify-center">
             {% for topic in topics %}
               <li {% if loop.last %}class="mb-16"{% endif %}>
-                <a href="{{ url_for('views.api_index', topic_id=topic.topic_id) }}"
+                <a href="{{ url_for('api.index', topic_id=topic.topic_id) }}"
                    class="block font-semibold bg-[#ffcb3c] text-[#090b0e] py-1 px-4 rounded-xl"
                    target="_blank"
                    rel="noopener noreferrer">{{ topic.topic }}</a>

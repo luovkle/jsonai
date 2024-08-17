@@ -7,7 +7,8 @@ from flask.logging import default_handler
 from app.cache import init_cache_db
 from app.config import settings
 from app.db import init_db
-from app.views import bp as views_bp
+from app.views.api import bp as api_bp
+from app.views.index import bp as index_bp
 
 
 class RequestFormatter(logging.Formatter):
@@ -50,7 +51,8 @@ def create_app():
     )
     init_db(app)
     init_cache_db(app)
-    app.register_blueprint(views_bp)
+    app.register_blueprint(index_bp)
+    app.register_blueprint(api_bp)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, internal_server_error)
     return app
