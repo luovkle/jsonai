@@ -9,7 +9,7 @@ from pymongo import MongoClient
 from app.config import settings
 from app.exceptions import CouldNotSaveDocumentError, DocumentNotFoundError
 from app.schemas import TopicRead
-from app.types import FoundTopics
+from app.types import FoundTopics, Message
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -146,3 +146,18 @@ def db_show(topic_id: str, item_id: str) -> dict:
             item_not_fund_error_template.format(item_id=item_id)
         )
     return items[0]
+
+
+def db_delete(topic_id: str, item_id: str) -> Message:
+    db = get_db()
+    collection = db.public
+    result = collection.update_one(
+        {"_id": topic_id, "content.id": item_id},
+        {"$pull": {"content": {"id": item_id}}},
+    )
+    if result.matched_count == 0 or result.modified_count == 0:
+        current_app.logger.warning(item_not_fund_error_template.format(item_id=item_id))
+        raise DocumentNotFoundError(
+            item_not_fund_error_template.format(item_id=item_id)
+        )
+    return {"msg": "ok"}

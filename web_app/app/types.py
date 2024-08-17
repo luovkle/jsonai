@@ -8,3 +8,10 @@ FoundTopics = TypedDict(
         "next": int | None,
     },
 )
+
+Message = TypedDict(
+    "Message",
+    {
+        "msg": str,
+    },
+)
