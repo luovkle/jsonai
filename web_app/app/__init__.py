@@ -31,11 +31,11 @@ default_handler.setFormatter(formatter)
 
 
 def page_not_found(_):
-    return render_template("404.html"), 404
+    return render_template("errors/404.html"), 404
 
 
 def internal_server_error(_):
-    return render_template("500.html"), 500
+    return render_template("errors/500.html"), 500
 
 
 def create_app():
