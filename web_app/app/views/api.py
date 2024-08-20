@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from werkzeug.exceptions import (
     BadRequest,
     InternalServerError,
@@ -6,7 +6,7 @@ from werkzeug.exceptions import (
     UnprocessableEntity,
 )
 
-from app.db import db_delete, db_index, db_show
+from app.db import db_create, db_delete, db_index, db_show
 from app.exceptions import DocumentNotFoundError
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -30,6 +30,13 @@ def unprocessable_entity(e: UnprocessableEntity):
 @bp.errorhandler(500)
 def internal_server_error(_: InternalServerError):
     return jsonify(detail="Internal Server Error"), 500
+
+
+@bp.post("/<topic_id>")
+def create(topic_id: str):
+    new_item = request.get_json()
+    content = db_create(topic_id, new_item)
+    return content, 201
 
 
 @bp.get("/<topic_id>")

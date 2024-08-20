@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flask import current_app, g
+from flask import abort, current_app, g
 from pydantic import ValidationError
 from pymongo import MongoClient
 
 from app.config import settings
 from app.exceptions import CouldNotSaveDocumentError, DocumentNotFoundError
-from app.schemas import TopicRead
+from app.schemas import TopicRead, generate_model
 from app.types import FoundTopics, Message
 
 if TYPE_CHECKING:
@@ -19,6 +19,7 @@ could_not_save_document_error_template = "Could not save the document {topic_id}
 validation_error_template = "The document {doc_id} does not have a valid schema"
 topic_not_found_error_template = "Topic {topic_id} not found"
 item_not_found_error_template = "Item {item_id} not found"
+content_not_found_error_template = "Content of {topic_id} not found"
 
 
 def _save_document(db: "Database", collection: str, topic_id: str, data: dict) -> dict:
@@ -32,6 +33,27 @@ def _save_document(db: "Database", collection: str, topic_id: str, data: dict) -
             could_not_save_document_error_template.format(topic_id=topic_id)
         )
     return doc
+
+
+def _get_collection_model(db: "Database", topic_id: str):
+    doc = db["backup"].find_one(
+        {"_id": topic_id},
+        {"content": {"$slice": 1}},
+    )
+    if not doc:
+        current_app.logger.warning(
+            topic_not_found_error_template.format(topic_id=topic_id)
+        )
+        abort(404, description=topic_not_found_error_template.format(topic_id=topic_id))
+    content = doc.get("content")
+    if not content:
+        current_app.logger.error(
+            content_not_found_error_template.format(topic_id=topic_id)
+        )
+        abort(500)
+    item = content[0]
+    item.pop("id", None)
+    return generate_model("Item", item)
 
 
 def get_db() -> "Database":
@@ -170,3 +192,31 @@ def db_delete(topic_id: str, item_id: str) -> Message:
             item_not_found_error_template.format(item_id=item_id)
         )
     return {"msg": "ok"}
+
+
+def db_create(topic_id: str, new_item: dict) -> dict:
+    db = get_db()
+    collection = db.public
+    Item = _get_collection_model(db, topic_id)
+    try:
+        new_item_obj = Item(**new_item)
+    except ValidationError as e:
+        abort(422, description=e.errors())
+    new_item_data = {"id": str(uuid4()), **new_item_obj.model_dump()}
+    result = collection.update_one(
+        {"_id": topic_id},
+        {"$push": {"content": new_item_data}},
+    )
+    if result.matched_count == 0 or result.modified_count == 0:
+        current_app.logger.warning(
+            topic_not_found_error_template.format(topic_id=topic_id)
+        )
+        abort(404, description=topic_not_found_error_template.format(topic_id=topic_id))
+    doc = collection.find_one(
+        {"_id": topic_id},
+        {"content": {"$elemMatch": {"id": new_item_data["id"]}}},
+    )
+    if not doc:
+        abort(500)
+    content = doc.get("content")
+    return content[0]
