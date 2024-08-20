@@ -6,7 +6,7 @@ from werkzeug.exceptions import (
     UnprocessableEntity,
 )
 
-from app.db import db_create, db_delete, db_index, db_show
+from app.db import db_create, db_delete, db_index, db_show, db_update
 from app.exceptions import DocumentNotFoundError
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -54,6 +54,13 @@ def show(topic_id: str, item_id: str):
         content = db_show(topic_id, item_id)
     except DocumentNotFoundError as e:
         return jsonify(error=str(e)), 404
+    return content
+
+
+@bp.put("/<topic_id>/<item_id>")
+def update(topic_id: str, item_id: str):
+    new_item_data = request.get_json()
+    content = db_update(topic_id, item_id, new_item_data)
     return content
 
 

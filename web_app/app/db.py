@@ -20,6 +20,7 @@ validation_error_template = "The document {doc_id} does not have a valid schema"
 topic_not_found_error_template = "Topic {topic_id} not found"
 item_not_found_error_template = "Item {item_id} not found"
 content_not_found_error_template = "Content of {topic_id} not found"
+no_changes_error_template = "No changes to be made to item {item_id}"
 
 
 def _save_document(db: "Database", collection: str, topic_id: str, data: dict) -> dict:
@@ -54,6 +55,27 @@ def _get_collection_model(db: "Database", topic_id: str):
     item = content[0]
     item.pop("id", None)
     return generate_model("Item", item)
+
+
+def _get_item_by_id(db: "Database", topic_id: str, item_id: str) -> dict:
+    db = get_db()
+    collection = db.public
+    doc = collection.find_one(
+        {"_id": topic_id},
+        {"content": {"$elemMatch": {"id": item_id}}},
+    )
+    if not doc:
+        current_app.logger.warning(
+            topic_not_found_error_template.format(topic_id=topic_id)
+        )
+        abort(404, description=topic_not_found_error_template.format(topic_id=topic_id))
+    content = doc.get("content")
+    if not content:
+        current_app.logger.warning(
+            item_not_found_error_template.format(item_id=item_id)
+        )
+        abort(404, description=item_not_found_error_template.format(item_id=item_id))
+    return content[0]
 
 
 def get_db() -> "Database":
@@ -220,3 +242,33 @@ def db_create(topic_id: str, new_item: dict) -> dict:
         abort(500)
     content = doc.get("content")
     return content[0]
+
+
+def db_update(topic_id: str, item_id: str, new_data: dict) -> dict:
+    db = get_db()
+    collection = db.public
+    item = _get_item_by_id(db, topic_id, item_id)
+    Item = _get_collection_model(db, topic_id)
+    try:
+        new_data_obj = Item(**new_data)
+    except ValidationError as e:
+        abort(422, description=e.errors())
+    new_item = {"id": item["id"], **new_data_obj.model_dump()}
+    result = collection.update_one(
+        {"_id": topic_id, "content.id": item_id},
+        {"$set": {"content.$[elem]": new_item}},
+        array_filters=[{"elem.id": item_id}],
+    )
+    if result.matched_count == 0:
+        current_app.logger.warning(
+            item_not_found_error_template.format(item_id=item_id)
+        )
+        abort(404, description=item_not_found_error_template.format(item_id=item_id))
+    if result.modified_count == 0:
+        current_app.logger.warning(no_changes_error_template.format(item_id=item_id))
+        abort(400, description=no_changes_error_template.format(item_id=item_id))
+    item = _get_item_by_id(db, topic_id, item_id)
+    if not item:
+        current_app.logger.error(item_not_found_error_template.format(item_id=item_id))
+        abort(500)
+    return item
