@@ -21,6 +21,19 @@ topic_not_fund_error_template = "Topic {topic_id} not found"
 item_not_fund_error_template = "Item {item_id} not found"
 
 
+def _save_document(db: "Database", collection: str, topic_id: str, data: dict) -> dict:
+    result = db[collection].insert_one(data)
+    doc = db.public.find_one({"_id": result.inserted_id})
+    if not doc:
+        current_app.logger.error(
+            could_not_save_document_error_template.format(topic_id=topic_id)
+        )
+        raise CouldNotSaveDocumentError(
+            could_not_save_document_error_template.format(topic_id=topic_id)
+        )
+    return doc
+
+
 def get_db() -> "Database":
     if "db" not in g:
         g.db = MongoClient(settings.DB_URI)
@@ -39,22 +52,14 @@ def init_db(app: "Flask"):
 
 def db_save(topic_id: str, topic: str, content: list[dict]) -> bool:
     db = get_db()
-    result = db.public.insert_one(
-        {
-            "_id": topic_id,
-            "topic": topic,
-            "content": content,
-            "created_at": datetime.now(),
-        }
-    )
-    doc = db.public.find_one({"_id": result.inserted_id})
-    if not doc:
-        current_app.logger.error(
-            could_not_save_document_error_template.format(topic_id=topic_id)
-        )
-        raise CouldNotSaveDocumentError(
-            could_not_save_document_error_template.format(topic_id=topic_id)
-        )
+    new_doc = {
+        "_id": topic_id,
+        "topic": topic,
+        "content": content,
+        "created_at": datetime.now(),
+    }
+    _save_document(db, collection="public", topic_id=topic_id, data=new_doc)
+    _save_document(db, collection="backup", topic_id=topic_id, data=new_doc)
     return True
 
 
