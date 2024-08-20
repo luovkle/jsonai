@@ -120,7 +120,7 @@ def db_last_topics() -> list[dict]:
     return topics
 
 
-def db_read(topic_id: str) -> list[dict]:
+def db_index(topic_id: str) -> list[dict]:
     db = get_db()
     doc = db.public.find_one({"_id": topic_id})
     if not doc:

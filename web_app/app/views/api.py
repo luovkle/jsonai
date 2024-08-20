@@ -6,7 +6,7 @@ from werkzeug.exceptions import (
     UnprocessableEntity,
 )
 
-from app.db import db_delete, db_read, db_show
+from app.db import db_delete, db_index, db_show
 from app.exceptions import DocumentNotFoundError
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -35,7 +35,7 @@ def internal_server_error(_: InternalServerError):
 @bp.get("/<topic_id>")
 def index(topic_id: str):
     try:
-        content = db_read(topic_id)
+        content = db_index(topic_id)
     except DocumentNotFoundError as e:
         return jsonify(error=str(e)), 404
     return content
