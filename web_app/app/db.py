@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
 could_not_save_document_error_template = "Could not save the document {topic_id}"
 validation_error_template = "The document {doc_id} does not have a valid schema"
-topic_not_fund_error_template = "Topic {topic_id} not found"
-item_not_fund_error_template = "Item {item_id} not found"
+topic_not_found_error_template = "Topic {topic_id} not found"
+item_not_found_error_template = "Item {item_id} not found"
 
 
 def _save_document(db: "Database", collection: str, topic_id: str, data: dict) -> dict:
@@ -125,10 +125,10 @@ def db_index(topic_id: str) -> list[dict]:
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
         current_app.logger.warning(
-            topic_not_fund_error_template.format(topic_id=topic_id)
+            topic_not_found_error_template.format(topic_id=topic_id)
         )
         raise DocumentNotFoundError(
-            topic_not_fund_error_template.format(topic_id=topic_id)
+            topic_not_found_error_template.format(topic_id=topic_id)
         )
     return doc.get("content", [])
 
@@ -138,17 +138,19 @@ def db_show(topic_id: str, item_id: str) -> dict:
     doc = db.public.find_one({"_id": topic_id})
     if not doc:
         current_app.logger.warning(
-            topic_not_fund_error_template.format(topic_id=topic_id)
+            topic_not_found_error_template.format(topic_id=topic_id)
         )
         raise DocumentNotFoundError(
-            topic_not_fund_error_template.format(topic_id=topic_id)
+            topic_not_found_error_template.format(topic_id=topic_id)
         )
     content: list = doc.get("content")
     items = list(filter(lambda item: item.get("id") == item_id, content))
     if not items:
-        current_app.logger.warning(item_not_fund_error_template.format(item_id=item_id))
+        current_app.logger.warning(
+            item_not_found_error_template.format(item_id=item_id)
+        )
         raise DocumentNotFoundError(
-            item_not_fund_error_template.format(item_id=item_id)
+            item_not_found_error_template.format(item_id=item_id)
         )
     return items[0]
 
@@ -161,8 +163,10 @@ def db_delete(topic_id: str, item_id: str) -> Message:
         {"$pull": {"content": {"id": item_id}}},
     )
     if result.matched_count == 0 or result.modified_count == 0:
-        current_app.logger.warning(item_not_fund_error_template.format(item_id=item_id))
+        current_app.logger.warning(
+            item_not_found_error_template.format(item_id=item_id)
+        )
         raise DocumentNotFoundError(
-            item_not_fund_error_template.format(item_id=item_id)
+            item_not_found_error_template.format(item_id=item_id)
         )
     return {"msg": "ok"}
