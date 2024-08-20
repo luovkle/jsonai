@@ -66,7 +66,7 @@ def publish():
         return redirect(url_for("index.generator"))
     if request.method == "POST":
         db_save(topic_id, data.get("topic", ""), data.get("content", []))
-        session.pop("topic_id")
+        session.pop("topic_id", None)
         return redirect(url_for("api.index", topic_id=topic_id))
     return render_template("publish.html", topic=data.get("topic"))
 
